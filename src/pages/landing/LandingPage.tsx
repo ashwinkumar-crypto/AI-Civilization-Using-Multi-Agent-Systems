@@ -1,5 +1,5 @@
 import LandingLayout from "@/components/layout/LandingLayout";
-import HeroSection from "@/components/landing/HeroSection";
+import HeroSection from "@/components/landing/Herosection";
 import FeaturesSection from "@/components/landing/FeaturesSection";
 import ArchitectureSection from "@/components/landing/ArchitectureSection";
 import TechStackSection from "@/components/landing/TechStackSection";
