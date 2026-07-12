@@ -1,4 +1,6 @@
-import { useState } from "react";
+const fs = require("fs");
+
+const loginPage = `import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -93,9 +95,9 @@ export default function LoginPage() {
                 setMode("researcher");
                 clearError();
               }}
-              className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${
+              className={\`flex-1 rounded-lg py-2 text-sm font-medium transition-colors \${
                 mode === "researcher" ? "bg-gradient-to-r from-primary to-secondary text-white" : "text-white/50"
-              }`}
+              }\`}
             >
               Researcher
             </button>
@@ -104,9 +106,9 @@ export default function LoginPage() {
                 setMode("admin");
                 clearError();
               }}
-              className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${
+              className={\`flex-1 rounded-lg py-2 text-sm font-medium transition-colors \${
                 mode === "admin" ? "bg-gradient-to-r from-primary to-secondary text-white" : "text-white/50"
-              }`}
+              }\`}
             >
               Administrator
             </button>
@@ -200,3 +202,7 @@ export default function LoginPage() {
     </div>
   );
 }
+`;
+
+fs.writeFileSync("src/pages/auth/LoginPage.tsx", loginPage, { encoding: "utf8" });
+console.log("LoginPage.tsx rewritten successfully.");
