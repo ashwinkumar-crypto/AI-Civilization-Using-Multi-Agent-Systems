@@ -6,10 +6,5 @@ export interface AuthUser {
   email: string;
   role: UserRole;
   avatarInitials: string;
-}
-
-export interface LoginCredentials {
-  email: string;
-  password: string;
-  rememberMe: boolean;
+  photoURL?: string | null;
 }

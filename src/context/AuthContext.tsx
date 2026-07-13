@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
-import { AuthUser, LoginCredentials } from "@/types/user.types";
+import { AuthUser } from "@/types/user.types";
 import { authService } from "@/services/authService";
 
 interface AuthContextValue {
@@ -7,8 +7,9 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
-  login: (credentials: LoginCredentials) => Promise<AuthUser>;
-  logout: () => void;
+  loginWithGoogle: () => Promise<AuthUser>;
+  loginAsAdmin: (email: string, password: string) => Promise<AuthUser>;
+  logout: () => Promise<void>;
   clearError: () => void;
 }
 
@@ -20,20 +21,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const stored = authService.getStoredUser();
-    if (stored) setUser(stored);
-    setIsLoading(false);
+    const unsubscribe = authService.onAuthChange((firebaseUser) => {
+      setUser(firebaseUser);
+      setIsLoading(false);
+    });
+    return unsubscribe;
   }, []);
 
-  const login = async (credentials: LoginCredentials) => {
+  const loginWithGoogle = async () => {
     setError(null);
     setIsLoading(true);
     try {
-      const loggedInUser = await authService.login(credentials);
+      const loggedInUser = await authService.loginWithGoogle();
       setUser(loggedInUser);
       return loggedInUser;
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Login failed.";
+      const message = err instanceof Error ? err.message : "Google sign-in failed.";
       setError(message);
       throw err;
     } finally {
@@ -41,8 +44,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const logout = () => {
-    authService.logout();
+  const loginAsAdmin = async (email: string, password: string) => {
+    setError(null);
+    setIsLoading(true);
+    try {
+      const loggedInUser = await authService.loginAsAdmin(email, password);
+      setUser(loggedInUser);
+      return loggedInUser;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Admin login failed.";
+      setError(message);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    await authService.logout();
     setUser(null);
   };
 
@@ -55,7 +74,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticated: !!user,
         isLoading,
         error,
-        login,
+        loginWithGoogle,
+        loginAsAdmin,
         logout,
         clearError,
       }}
